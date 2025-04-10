@@ -1,0 +1,10 @@
+# Allow all crawlers
+User-agent: *
+Allow: /
+
+# Disallow admin routes
+Disallow: /iraklijanashvili/
+Disallow: /admin/
+
+# Sitemap location
+Sitemap: https://universaltoolkit.ge/sitemap.xml 
