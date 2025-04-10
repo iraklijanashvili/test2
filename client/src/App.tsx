@@ -66,17 +66,3 @@ function App() {
 }
 
 export default App;
-
-
-import { Route, Switch } from 'wouter';
-
-function App() {
-  return (
-    <Switch>
-      <Route path="/horoscope/:sign" component={HoroscopeDetailPage} />
-      <Route path="/horoscope" component={HoroscopePage} />
-      {/* other routes */}
-      <Route>404, Not Found!</Route>
-    </Switch>
-  );
-}
