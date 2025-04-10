@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: universal-toolkit-server
+    env: node
+    buildCommand: npm install && npm run build
+    startCommand: npm run start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false
+    healthCheckPath: /api/health
+    autoDeploy: true
+
+  - type: web
+    name: universal-toolkit-client
+    env: static
+    buildCommand: cd client && npm install && npm run build
+    staticPublishPath: ./dist/public
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
