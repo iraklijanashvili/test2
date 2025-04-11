@@ -1,8 +1,19 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import cors from "cors";
 
 const app = express();
+
+// CORS კონფიგურაცია
+app.use(cors({
+  origin: process.env.NODE_ENV === "production" 
+    ? ["https://beamish-fox-7ea396.netlify.app"] // შეცვალეთ თქვენი დომეინით
+    : "*",
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"]
+}));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
