@@ -7,7 +7,7 @@ const app = express();
 
 // CORS კონფიგურაცია
 app.use(cors({
-  origin: ["http://localhost:3000", "http://localhost:5173", "https://your-frontend-domain.com"],
+  origin: ["http://localhost:3000", "http://localhost:5173", "https://your-frontend-domain.com", "https://test2-frontend.netlify.app", "https://beamish-fox-7ea396.netlify.app"],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
   allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
   credentials: true,

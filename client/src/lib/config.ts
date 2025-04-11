@@ -2,7 +2,11 @@
 
 // ბექენდის მისამართი გარემოს მიხედვით
 // ბექენდი ყოველთვის ლოკალურად გაეშვება
-export const API_BASE_URL = 'http://localhost:3000';
+// დაჰოსტილი ფრონტენდისთვის გამოიყენეთ თქვენი ლოკალური IP მისამართი
+// ან გამოიყენეთ პირობითი ლოგიკა გარემოს მიხედვით
+export const API_BASE_URL = window.location.hostname === 'localhost' 
+  ? 'http://localhost:3000' 
+  : 'http://94.137.168.147:3000'; // გარე IP მისამართი
 
 // API მოთხოვნების კონფიგურაცია
 export const API_CONFIG = {
