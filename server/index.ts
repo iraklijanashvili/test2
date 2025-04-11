@@ -7,11 +7,11 @@ const app = express();
 
 // CORS კონფიგურაცია
 app.use(cors({
-  origin: process.env.NODE_ENV === "production" 
-    ? ["https://beamish-fox-7ea396.netlify.app"] // შეცვალეთ თქვენი დომეინით
-    : "*",
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"]
+  origin: ["https://beamish-fox-7ea396.netlify.app"],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+  credentials: true,
+  maxAge: 86400 // CORS preflight cache 24 საათი
 }));
 
 app.use(express.json());
