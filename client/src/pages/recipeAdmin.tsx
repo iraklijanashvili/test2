@@ -205,7 +205,7 @@ export default function RecipeAdminPage() {
                       <FormItem>
                         <FormLabel>სათაური</FormLabel>
                         <FormControl>
-                          <Input placeholder="მაგ. ხინკალი" {...field} />
+                          <Input name="სათაური" placeholder="მაგ. ხინკალი" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -220,6 +220,7 @@ export default function RecipeAdminPage() {
                         <FormLabel>აღწერა</FormLabel>
                         <FormControl>
                           <Textarea 
+                            name="აღწერა"
                             placeholder="მოკლე აღწერა თქვენი რეცეპტის შესახებ" 
                             className="min-h-[100px]" 
                             {...field} 
@@ -237,7 +238,7 @@ export default function RecipeAdminPage() {
                       <FormItem>
                         <FormLabel>სურათის URL</FormLabel>
                         <FormControl>
-                          <Input placeholder="https://example.com/image.jpg" {...field} />
+                          <Input name="სურათის URL" placeholder="https://example.com/image.jpg" {...field} />
                         </FormControl>
                         <FormDescription>
                           ჩასვით სურათის ბმული. თუ ცარიელს დატოვებთ, გამოყენებული იქნება სტანდარტული გამოსახულება.
@@ -257,7 +258,7 @@ export default function RecipeAdminPage() {
                           <Select onValueChange={field.onChange} defaultValue={field.value}>
                             <FormControl>
                               <SelectTrigger>
-                                <SelectValue placeholder="აირჩიეთ კატეგორია" />
+                                <SelectValue name="კატეგორია" placeholder="აირჩიეთ კატეგორია" />
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
@@ -326,7 +327,7 @@ export default function RecipeAdminPage() {
                         <FormItem>
                           <FormLabel>მომზადების დრო (წუთი)</FormLabel>
                           <FormControl>
-                            <Input type="number" min="1" {...field} />
+                            <Input name="მომზადების დრო" type="number" min="1" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -340,7 +341,7 @@ export default function RecipeAdminPage() {
                         <FormItem>
                           <FormLabel>მომზადების დრო (წუთი)</FormLabel>
                           <FormControl>
-                            <Input type="number" min="0" {...field} />
+                            <Input name="თბობის დრო" type="number" min="0" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -354,7 +355,7 @@ export default function RecipeAdminPage() {
                         <FormItem>
                           <FormLabel>პორციების რაოდენობა</FormLabel>
                           <FormControl>
-                            <Input type="number" min="1" {...field} />
+                            <Input name="პორციები" type="number" min="1" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
