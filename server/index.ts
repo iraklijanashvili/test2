@@ -7,7 +7,7 @@ const app = express();
 
 // CORS კონფიგურაცია
 app.use(cors({
-  origin: true, // ყველა დომეინის დაშვება
+  origin: ["http://localhost:3000", "http://localhost:5173", "https://your-frontend-domain.com"],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
   allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
   credentials: true,
@@ -73,7 +73,7 @@ app.use((req, res, next) => {
   const port = process.env.PORT ? parseInt(process.env.PORT) : 3000;
   server.listen({
     port,
-    host: "localhost",
+    host: "0.0.0.0",
   }, () => {
     log(`სერვერი გაშვებულია პორტზე ${port}`);
   });
