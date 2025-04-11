@@ -7,7 +7,7 @@ const app = express();
 
 // CORS კონფიგურაცია
 app.use(cors({
-  origin: ["https://beamish-fox-7ea396.netlify.app"],
+  origin: true, // ყველა დომეინის დაშვება
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
   allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
   credentials: true,
