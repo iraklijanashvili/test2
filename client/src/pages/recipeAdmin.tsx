@@ -26,14 +26,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 
 // რეცეპტის ფორმის სქემა (ვალიდაციის გარეშე)
 const recipeFormSchema = z.object({
-  title: z.string(),
-  description: z.string(),
+  title: z.string().optional(),
+  description: z.string().optional(),
   imageUrl: z.string().optional().or(z.literal("")),
-  category: z.enum(["მთავარი კერძი", "სალათი", "დესერტი", "საუზმე", "სუპი", "ხაჭაპური და პური"]),
-  prepTime: z.coerce.number(),
-  cookTime: z.coerce.number(),
-  servings: z.coerce.number(),
-  difficulty: z.enum(["მარტივი", "საშუალო", "რთული"])
+  category: z.enum(["მთავარი კერძი", "სალათი", "დესერტი", "საუზმე", "სუპი", "ხაჭაპური და პური"]).optional(),
+  prepTime: z.coerce.number().optional(),
+  cookTime: z.coerce.number().optional(),
+  servings: z.coerce.number().optional(),
+  difficulty: z.enum(["მარტივი", "საშუალო", "რთული"]).optional()
 });
 
 type RecipeFormValues = z.infer<typeof recipeFormSchema>;
