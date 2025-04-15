@@ -13,7 +13,7 @@ export default defineConfig({
   ],
   build: {
     rollupOptions: {
-      external: ['react-error-boundary']
+      external: ['react-error-boundary', '@supabase/supabase-js']
     },
   },
   resolve: {
