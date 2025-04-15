@@ -1,19 +1,17 @@
-import { drizzle } from 'drizzle-orm/better-sqlite3';
+import { drizzle } from 'drizzle-orm/postgres-js';
 import { eq } from 'drizzle-orm';
 import { recipes as georgianRecipes, ingredients as recipeIngredients, steps as recipeSteps, news, InsertNews, News, tutorials, InsertTutorial, Tutorial, tips, InsertTip, Tip, InsertRecipe, Recipe, InsertIngredient, InsertStep, RecipeWithDetails } from '@shared/schema';
-import Database from 'better-sqlite3';
+import postgres from 'postgres';
 import 'dotenv/config';
 
 // ბაზის კავშირის სტრინგი
-const connectionString = process.env.DATABASE_URL || 'sqlite://./dev.db';
-const sqliteFilename = connectionString.replace('sqlite://', '');
+const connectionString = process.env.DATABASE_URL || '';
 
-// SQLite კავშირის შექმნა
-const sqlite = new Database(sqliteFilename);
-export const db = drizzle(sqlite);
-export const queryClient = sqlite;
+// PostgreSQL კავშირის შექმნა
+const client = postgres(connectionString);
+export const db = drizzle(client);
 
-console.log(`🔌 Using SQLite database: ${sqliteFilename}`);
+console.log(`🔌 Using PostgreSQL database`);
 
 // რეცეპტის მიღება ID-ის მიხედვით
 export async function getGeorgianRecipeById(id: number) {

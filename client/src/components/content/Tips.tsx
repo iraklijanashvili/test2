@@ -1,19 +1,46 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useQuery } from "@tanstack/react-query";
 import { Search, Lightbulb } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import type { Tip } from "@shared/schema";
+import { supabase } from "@/lib/supabase";
+import type { Database } from "@/types/supabase";
+
+type Tip = Database['public']['Tables']['tips']['Row'];
 
 export default function Tips() {
   const [searchQuery, setSearchQuery] = useState("");
+  const [tips, setTips] = useState<Tip[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isError, setIsError] = useState(false);
   const { toast } = useToast();
   
-  const { data: tips, isLoading, isError } = useQuery<Tip[]>({
-    queryKey: ['/api/tips'],
-  });
+  useEffect(() => {
+    async function fetchTips() {
+      try {
+        setIsLoading(true);
+        const { data, error } = await supabase
+          .from('tips')
+          .select('*')
+          .order('created_at', { ascending: false });
+        
+        if (error) {
+          throw error;
+        }
+        
+        setTips(data || []);
+        setIsError(false);
+      } catch (error) {
+        console.error('Error fetching tips:', error);
+        setIsError(true);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    
+    fetchTips();
+  }, []);
   
   const filteredTips = tips?.filter(tip => 
     tip.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -21,7 +48,7 @@ export default function Tips() {
     tip.content.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const tipOfDay = tips?.find(tip => tip.isTipOfDay === 1);
+  const tipOfDay = tips?.find(tip => tip.is_tip_of_day === true);
   
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -76,7 +103,7 @@ export default function Tips() {
             {filteredTips && filteredTips.length > 0 ? (
               <div className="space-y-4">
                 {filteredTips.map((tip) => (
-                  !tip.isTipOfDay && (
+                  !tip.is_tip_of_day && (
                     <div 
                       key={tip.id} 
                       className="bg-gray-50 p-3 rounded-lg hover:bg-gray-100"

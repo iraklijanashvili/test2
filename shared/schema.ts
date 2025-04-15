@@ -1,20 +1,20 @@
-import { sqliteTable, text, integer } from "drizzle-orm/sqlite-core";
+import { pgTable, text, integer, serial, boolean, timestamp } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 import { relations } from "drizzle-orm";
 import 'dotenv/config';
 
-// ვიყენებთ SQL-ს ტიპის მიხედვით
-const isUsingSQLite = process.env.DATABASE_URL?.startsWith('sqlite') || false;
-
-// ფუნქცია სწორი ტიპის ცხრილის შესარჩევად
-const createTable = isUsingSQLite ? sqliteTable : sqliteTable;
-const textColumn = isUsingSQLite ? text : text;
-const integerColumn = isUsingSQLite ? integer : integer;
+// ვიყენებთ PostgreSQL-ს
+const createTable = pgTable;
+const textColumn = text;
+const integerColumn = integer;
+const serialColumn = serial;
+const booleanColumn = boolean;
+const timestampColumn = timestamp;
 
 // რეცეპტების სქემა
 export const recipes = createTable("recipes", {
-  id: integerColumn("id").primaryKey({ autoIncrement: true }),
+  id: serialColumn("id").primaryKey(),
   title: textColumn("title").notNull(),
   description: textColumn("description").notNull(),
   imageUrl: textColumn("image_url"),
@@ -23,38 +23,38 @@ export const recipes = createTable("recipes", {
   cookTime: integerColumn("cook_time").notNull(), // წუთებში
   servings: integerColumn("servings").notNull(),
   difficulty: textColumn("difficulty").notNull(), // მარტივი, საშუალო, რთული
-  createdAt: integerColumn("created_at", { mode: 'timestamp' }).defaultNow().notNull(),
-  updatedAt: integerColumn("updated_at", { mode: 'timestamp' }).defaultNow().notNull()
+  createdAt: timestampColumn("created_at").defaultNow().notNull(),
+  updatedAt: timestampColumn("updated_at").defaultNow().notNull()
 });
 
 // რეცეპტის ინგრედიენტების სქემა
 export const ingredients = createTable("ingredients", {
-  id: integerColumn("id").primaryKey({ autoIncrement: true }),
+  id: serialColumn("id").primaryKey(),
   recipeId: integerColumn("recipe_id").notNull(),
   name: textColumn("name").notNull(),
   amount: textColumn("amount").notNull(),
   unit: textColumn("unit").notNull(),
-  createdAt: integerColumn("created_at", { mode: 'timestamp' }).defaultNow().notNull()
+  createdAt: timestampColumn("created_at").defaultNow().notNull()
 });
 
 // რეცეპტის მომზადების ნაბიჯების სქემა
 export const steps = createTable("steps", {
-  id: integerColumn("id").primaryKey({ autoIncrement: true }),
+  id: serialColumn("id").primaryKey(),
   recipeId: integerColumn("recipe_id").notNull(),
   stepNumber: integerColumn("step_number").notNull(),
   instruction: textColumn("instruction").notNull(),
-  createdAt: integerColumn("created_at", { mode: 'timestamp' }).defaultNow().notNull()
+  createdAt: timestampColumn("created_at").defaultNow().notNull()
 });
 
 // სიახლეების სქემა
 export const news = createTable("news", {
-  id: integerColumn("id").primaryKey({ autoIncrement: true }),
+  id: serialColumn("id").primaryKey(),
   title: textColumn("title").notNull(),
   content: textColumn("content").notNull(),
   imageUrl: textColumn("image_url"),
   videoUrl: textColumn("video_url"),
-  createdAt: integerColumn("created_at", { mode: 'timestamp' }).defaultNow().notNull(),
-  updatedAt: integerColumn("updated_at", { mode: 'timestamp' }).defaultNow().notNull()
+  createdAt: timestampColumn("created_at").defaultNow().notNull(),
+  updatedAt: timestampColumn("updated_at").defaultNow().notNull()
 });
 
 // ურთიერთკავშირები
@@ -140,25 +140,25 @@ export const insertRecipeIngredientSchema = insertIngredientSchema;
 export const insertRecipeStepSchema = insertStepSchema;
 // ინსტრუქციების სქემა
 export const tutorials = createTable("tutorials", {
-  id: integerColumn("id").primaryKey({ autoIncrement: true }),
+  id: serialColumn("id").primaryKey(),
   title: textColumn("title").notNull(),
   content: textColumn("content").notNull(),
   category: textColumn("category").notNull(),
   imageUrl: textColumn("image_url"),
   readTime: textColumn("read_time").notNull(),
-  createdAt: integerColumn("created_at", { mode: 'timestamp' }).defaultNow().notNull(),
-  updatedAt: integerColumn("updated_at", { mode: 'timestamp' }).defaultNow().notNull()
+  createdAt: timestampColumn("created_at").defaultNow().notNull(),
+  updatedAt: timestampColumn("updated_at").defaultNow().notNull()
 });
 
 // რჩევების სქემა
 export const tips = createTable("tips", {
-  id: integerColumn("id").primaryKey({ autoIncrement: true }),
+  id: serialColumn("id").primaryKey(),
   title: textColumn("title").notNull(),
   content: textColumn("content").notNull(),
   category: textColumn("category").notNull(),
-  isTipOfDay: integerColumn("is_tip_of_day").default(0).notNull(),
-  createdAt: integerColumn("created_at", { mode: 'timestamp' }).defaultNow().notNull(),
-  updatedAt: integerColumn("updated_at", { mode: 'timestamp' }).defaultNow().notNull()
+  isTipOfDay: booleanColumn("is_tip_of_day").default(false).notNull(),
+  createdAt: timestampColumn("created_at").defaultNow().notNull(),
+  updatedAt: timestampColumn("updated_at").defaultNow().notNull()
 });
 
 export const insertTutorialSchema = createInsertSchema(tutorials).pick({
@@ -185,14 +185,14 @@ export type Tip = typeof tips.$inferSelect;
 
 // ჰოროსკოპის სქემა
 export const horoscopes = createTable("horoscopes", {
-  id: integerColumn("id").primaryKey({ autoIncrement: true }),
+  id: serialColumn("id").primaryKey(),
   name: textColumn("name").notNull(),
   date: textColumn("date").notNull(),
   description: textColumn("description").notNull(),
   category: textColumn("category").notNull(),
   prediction: textColumn("prediction").notNull(),
-  createdAt: integerColumn("created_at", { mode: 'timestamp' }).defaultNow().notNull(),
-  updatedAt: integerColumn("updated_at", { mode: 'timestamp' }).defaultNow().notNull()
+  createdAt: timestampColumn("created_at").defaultNow().notNull(),
+  updatedAt: timestampColumn("updated_at").defaultNow().notNull()
 });
 
 export const insertHoroscopeSchema = createInsertSchema(horoscopes).pick({

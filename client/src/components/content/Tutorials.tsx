@@ -1,24 +1,51 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useQuery } from "@tanstack/react-query";
 import { Search, Info, Users, Download } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import type { Tutorial } from "@shared/schema";
+import { supabase } from "@/lib/supabase";
+import type { Database } from "@/types/supabase";
+
+type Tutorial = Database['public']['Tables']['tutorials']['Row'];
 
 export default function Tutorials() {
   const [searchQuery, setSearchQuery] = useState("");
+  const [tutorials, setTutorials] = useState<Tutorial[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isError, setIsError] = useState(false);
   const { toast } = useToast();
   
-  const { data: tutorials, isLoading, isError } = useQuery<Tutorial[]>({
-    queryKey: ['/api/tutorials'],
-  });
+  useEffect(() => {
+    async function fetchTutorials() {
+      try {
+        setIsLoading(true);
+        const { data, error } = await supabase
+          .from('tutorials')
+          .select('*')
+          .order('created_at', { ascending: false });
+        
+        if (error) {
+          throw error;
+        }
+        
+        setTutorials(data || []);
+        setIsError(false);
+      } catch (error) {
+        console.error('Error fetching tutorials:', error);
+        setIsError(true);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    
+    fetchTutorials();
+  }, []);
   
   const filteredTutorials = tutorials?.filter(tutorial => 
     tutorial.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     tutorial.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    tutorial.description.toLowerCase().includes(searchQuery.toLowerCase())
+    tutorial.content.toLowerCase().includes(searchQuery.toLowerCase())
   );
   
   const handleSearch = (e: React.FormEvent) => {
@@ -86,9 +113,9 @@ export default function Tutorials() {
                   </div>
                   <div>
                     <h4 className="font-medium text-gray-800">{tutorial.title}</h4>
-                    <p className="text-sm text-gray-600 line-clamp-2">{tutorial.description}</p>
+                    <p className="text-sm text-gray-600 line-clamp-2">{tutorial.content}</p>
                     <div className="mt-1 text-xs text-gray-500">
-                      <span>{tutorial.category}</span> • <span>{tutorial.readTime}</span>
+                      <span>{tutorial.category}</span> • <span>{tutorial.read_time}</span>
                     </div>
                   </div>
                 </div>
