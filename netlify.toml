@@ -4,8 +4,8 @@
 
 [build.environment]
   # Supabase გარემოს ცვლადები
-  VITE_SUPABASE_URL = "https://[your-project-id].supabase.co"
-  VITE_SUPABASE_ANON_KEY = "your-anon-key"
+  VITE_SUPABASE_URL = "https://useqcwqtitdtdxuutzxv.supabase.co"
+  VITE_SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVzZXFjd3F0aXRkdGR4dXV0enh2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ3MjA0MjUsImV4cCI6MjA2MDI5NjQyNX0.z6NKksFYjokWV9DafsZDUN8-F1gkyZ6eCvmvbO3CnhE"
 
 # API პროქსი - გადაამისამართებს /api/* მოთხოვნებს ბექენდზე
 [[redirects]]
