@@ -13,6 +13,7 @@ import { ArrowLeft, Plus, Minus } from "lucide-react";
 import { recipeService } from "@/services/supabaseService";
 import SEO from "@/components/layout/SEO";
 
+
 type Ingredient = {
   name: string;
   amount: string;
@@ -118,31 +119,103 @@ export default function RecipeEditPage() {
         return;
       }
       
-      // API-ის გამოყენება რეცეპტის შესანახად
+      // რეცეპტის მონაცემების მომზადება
       const recipeData = {
-        recipe: {
-          title: recipe.title,
-          description: recipe.description,
-          imageUrl: recipe.imageUrl || "https://placehold.co/600x400?text=Recipe",
-          category: recipe.category,
-          prepTime: recipe.prepTime,
-          cookTime: recipe.cookTime,
-          servings: recipe.servings,
-          difficulty: recipe.difficulty
-        },
-        ingredients: validIngredients,
-        steps: validSteps.map((step, index) => ({
-          ...step,
-          stepNumber: index + 1
-        }))
+        title: recipe.title,
+        description: recipe.description,
+        image_url: recipe.imageUrl || "https://placehold.co/600x400?text=Recipe",
+        category: recipe.category,
+        prep_time: recipe.prepTime,
+        cook_time: recipe.cookTime,
+        servings: recipe.servings,
+        difficulty: recipe.difficulty
       };
       
       if (recipe.id) {
         // არსებული რეცეპტის განახლება
-        await recipeService.update(recipe.id, recipeData.recipe);
+        await recipeService.update(recipe.id, recipeData);
+        
+        // წავშალოთ არსებული ინგრედიენტები და ნაბიჯები
+        const { supabase } = await import('@/lib/supabase');
+        
+        await supabase
+          .from('ingredients')
+          .delete()
+          .eq('recipe_id', recipe.id);
+          
+        await supabase
+          .from('steps')
+          .delete()
+          .eq('recipe_id', recipe.id);
+        
+        // დავამატოთ ახალი ინგრედიენტები
+        if (validIngredients.length > 0) {
+          await supabase
+            .from('ingredients')
+            .insert(
+              validIngredients.map(ingredient => ({
+                recipe_id: recipe.id,
+                name: ingredient.name,
+                amount: ingredient.amount,
+                unit: ingredient.unit,
+                created_at: new Date().toISOString()
+              }))
+            );
+        }
+        
+        // დავამატოთ ახალი ნაბიჯები
+        if (validSteps.length > 0) {
+          await supabase
+            .from('steps')
+            .insert(
+              validSteps.map((step, index) => ({
+                recipe_id: recipe.id,
+                step_number: index + 1,
+                instruction: step.instruction,
+                created_at: new Date().toISOString()
+              }))
+            );
+        }
       } else {
         // ახალი რეცეპტის შექმნა
-        await recipeService.create(recipeData.recipe);
+        const { data: newRecipe } = await supabase
+          .from('recipes')
+          .insert({
+            ...recipeData,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          })
+          .select()
+          .single();
+        
+        // დავამატოთ ინგრედიენტები
+        if (validIngredients.length > 0) {
+          await supabase
+            .from('ingredients')
+            .insert(
+              validIngredients.map(ingredient => ({
+                recipe_id: newRecipe.id,
+                name: ingredient.name,
+                amount: ingredient.amount,
+                unit: ingredient.unit,
+                created_at: new Date().toISOString()
+              }))
+            );
+        }
+        
+        // დავამატოთ ნაბიჯები
+        if (validSteps.length > 0) {
+          await supabase
+            .from('steps')
+            .insert(
+              validSteps.map((step, index) => ({
+                recipe_id: newRecipe.id,
+                step_number: index + 1,
+                instruction: step.instruction,
+                created_at: new Date().toISOString()
+              }))
+            );
+        }
       }
       
       toast({

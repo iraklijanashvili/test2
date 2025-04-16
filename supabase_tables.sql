@@ -1,4 +1,12 @@
--- ცხრილების შექმნა Supabase-ში
+-- 1. წაშლა არსებული ცხრილებისა სწორი თანმიმდევრობით (foreign key-ების გამო)
+DROP TABLE IF EXISTS steps;
+DROP TABLE IF EXISTS ingredients;
+DROP TABLE IF EXISTS recipes;
+DROP TABLE IF EXISTS news;
+DROP TABLE IF EXISTS tips;
+DROP TABLE IF EXISTS tutorials;
+
+-- 2. ცხრილების შექმნა
 
 -- tutorials ცხრილი
 CREATE TABLE tutorials (
@@ -68,7 +76,7 @@ CREATE TABLE steps (
   created_at timestamp DEFAULT now() NOT NULL
 );
 
--- ინდექსების შექმნა
+-- 3. ინდექსების შექმნა
 CREATE INDEX idx_tutorials_category ON tutorials(category);
 CREATE INDEX idx_tips_category ON tips(category);
 CREATE INDEX idx_tips_is_tip_of_day ON tips(is_tip_of_day);
@@ -78,31 +86,33 @@ CREATE INDEX idx_ingredients_recipe_id ON ingredients(recipe_id);
 CREATE INDEX idx_steps_recipe_id ON steps(recipe_id);
 CREATE INDEX idx_steps_recipe_id_step_number ON steps(recipe_id, step_number);
 
--- სატესტო მონაცემების ჩასმა tutorials ცხრილში
+-- 4. სატესტო მონაცემების ჩასმა
+
+-- tutorials
 INSERT INTO tutorials (title, content, category, read_time) VALUES
 ('როგორ გამოვიყენოთ აპლიკაცია', 'დეტალური ინსტრუქცია აპლიკაციის გამოყენების შესახებ...', 'ტექნოლოგიები', '5 წუთი'),
 ('ფინანსური დაგეგმვის საფუძვლები', 'ფინანსური დაგეგმვის ძირითადი პრინციპები და რჩევები...', 'ფინანსები', '10 წუთი'),
 ('პირადი განვითარების გზამკვლევი', 'როგორ განვავითაროთ პიროვნული უნარები და თვისებები...', 'პირადი განვითარება', '7 წუთი');
 
--- სატესტო მონაცემების ჩასმა tips ცხრილში
+-- tips
 INSERT INTO tips (title, content, category, is_tip_of_day) VALUES
 ('დღის რჩევა', 'რეგულარულად შეამოწმეთ თქვენი ფინანსური მდგომარეობა', 'ფინანსები', TRUE),
 ('დროის მენეჯმენტი', 'გამოიყენეთ პომოდორო ტექნიკა პროდუქტიულობის გასაზრდელად', 'პირადი განვითარება', FALSE),
 ('უსაფრთხოება', 'რეგულარულად შეცვალეთ პაროლები თქვენს ანგარიშებზე', 'ტექნოლოგიები', FALSE);
 
--- სატესტო მონაცემების ჩასმა news ცხრილში
+-- news
 INSERT INTO news (title, content, image_url) VALUES
 ('ახალი ტექნოლოგიური მიღწევები', 'უახლესი ინფორმაცია ტექნოლოგიურ სიახლეებზე და ინოვაციებზე...', 'https://placehold.co/600x400?text=Tech+News'),
 ('ეკონომიკური მიმოხილვა', 'მიმდინარე ეკონომიკური ტენდენციები და პროგნოზები...', 'https://placehold.co/600x400?text=Economy'),
 ('კულტურული ღონისძიებები', 'ინფორმაცია უახლოეს კულტურულ და გასართობ ღონისძიებებზე...', 'https://placehold.co/600x400?text=Culture');
 
--- სატესტო მონაცემების ჩასმა recipes ცხრილში
+-- recipes
 INSERT INTO recipes (title, description, category, prep_time, cook_time, servings, difficulty) VALUES
 ('ხაჭაპური აჭარული', 'ტრადიციული აჭარული ხაჭაპური კვერცხით', 'ქართული სამზარეულო', 30, 20, 2, 'საშუალო'),
 ('ჩაშუშული', 'ტრადიციული ქართული კერძი ხორცით და სანელებლებით', 'ქართული სამზარეულო', 20, 60, 4, 'მარტივი'),
 ('ხინკალი', 'ქართული ხინკალი საქონლის ხორცით', 'ქართული სამზარეულო', 60, 30, 6, 'რთული');
 
--- სატესტო ინგრედიენტების ჩასმა
+-- ingredients
 INSERT INTO ingredients (recipe_id, name, amount, unit) VALUES
 (1, 'ფქვილი', '500', 'გრამი'),
 (1, 'ყველი', '300', 'გრამი'),
@@ -114,7 +124,7 @@ INSERT INTO ingredients (recipe_id, name, amount, unit) VALUES
 (3, 'ხორცი', '700', 'გრამი'),
 (3, 'წყალი', '500', 'მლ');
 
--- სატესტო ნაბიჯების ჩასმა
+-- steps
 INSERT INTO steps (recipe_id, step_number, instruction) VALUES
 (1, 1, 'მოზილეთ ცომი ფქვილისგან, წყლისა და მარილისგან'),
 (1, 2, 'გააბრტყელეთ ცომი და ჩაყარეთ ყველი'),
