@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
 import { Pencil, Trash2, Plus } from "lucide-react";
-import { supabase } from "@/lib/supabase";
+import { newsService } from "@/services/newsService";
 import SEO from "@/components/layout/SEO";
 
 interface NewsArticle {
@@ -16,8 +16,10 @@ interface NewsArticle {
   title: string;
   description: string;
   content: string;
-  publishedAt: string;
-  source: { name: string };
+  image_url?: string;
+  video_url?: string;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export default function NewsManagerPage() {
@@ -32,14 +34,8 @@ export default function NewsManagerPage() {
 
   const fetchNews = async () => {
     try {
-      // API-ის გამოყენება სიახლეების მისაღებად
-      const response = await fetch('/api/news');
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
-      const data = await response.json();
+      // newsService-ის გამოყენება სიახლეების მისაღებად
+      const data = await newsService.getAll();
       setNews(data.articles || []);
     } catch (error) {
       console.error('Error fetching news:', error);
@@ -75,30 +71,20 @@ export default function NewsManagerPage() {
         return;
       }
       
-      // მონაცემების მომზადება API-სთვის
+      // მონაცემების მომზადება Supabase-სთვის
       const newsData = {
         title: article.title,
         content: article.content,
         description: article.description || article.content.substring(0, 100),
-        imageUrl: article.source?.name || "",
-        videoUrl: ""
+        image_url: article.image_url || "",
+        video_url: article.video_url || ""
       };
       
-      // API-ის გამოყენება სიახლის შესანახად
-      const url = isEditing ? `/api/news/${article.id}` : '/api/news';
-      const method = isEditing ? 'PUT' : 'POST';
-      
-      const response = await fetch(url, {
-        method,
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(newsData)
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+      // newsService-ის გამოყენება სიახლის შესანახად
+      if (isEditing) {
+        await newsService.update(article.id, newsData);
+      } else {
+        await newsService.create(newsData);
       }
 
       toast({
@@ -121,14 +107,8 @@ export default function NewsManagerPage() {
     if (!confirm('ნამდვილად გსურთ სიახლის წაშლა?')) return;
 
     try {
-      // API-ის გამოყენება სიახლის წასაშლელად
-      const response = await fetch(`/api/news/${id}`, {
-        method: 'DELETE'
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
+      // newsService-ის გამოყენება სიახლის წასაშლელად
+      await newsService.delete(id);
 
       toast({
         title: "წარმატება",
@@ -162,8 +142,8 @@ export default function NewsManagerPage() {
             title: '',
             description: '',
             content: '',
-            publishedAt: new Date().toISOString(),
-            source: { name: 'საქართველოს ახალი ამბები' }
+            image_url: '',
+            video_url: ''
           })}>
             <Plus className="h-4 w-4 mr-2" />
             ახალი სიახლე
