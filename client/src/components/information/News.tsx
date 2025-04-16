@@ -81,19 +81,29 @@ export default function News() {
     return "სხვადასხვა";
   };
 
-  // სიახლეების მოთხოვნა
+  // სიახლეების მოთხოვნა Supabase-დან
   const fetchNews = async () => {
     setLoading(true);
     setError(null);
     
     try {
-      const response = await fetch('/api/news');
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
+      // Supabase-დან სიახლეების მოთხოვნა
+      const { newsService } = await import('@/services/newsService');
+      const result = await newsService.getAll();
       
-      const data = await response.json();
-      setNews(data.articles || []);
+      // სიახლეების ფორმატირება კომპონენტის ტიპებთან შესაბამისობაში
+      const formattedNews = result.articles.map((article: any) => ({
+        title: article.title,
+        description: article.content,
+        url: `/news/${article.id}`,
+        urlToImage: article.image_url || 'https://placehold.co/600x400?text=News',
+        publishedAt: article.created_at,
+        source: {
+          name: 'Supabase'
+        }
+      }));
+      
+      setNews(formattedNews);
     } catch (error) {
       console.error("Failed to fetch news:", error);
       setError("სიახლეების ჩატვირთვა ვერ მოხერხდა");

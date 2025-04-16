@@ -24,188 +24,8 @@ type Recipe = {
   steps: string[];
 };
 
-// ქართული რეცეპტების მონაცემთა ბაზა
-const GEORGIAN_RECIPES: Recipe[] = [
-  {
-    id: 1,
-    title: "ხაჭაპური აჭარული",
-    description: "გემრიელი გადახსნილი ხაჭაპური კვერცხით და კარაქით.",
-    imageUrl: "https://media.istockphoto.com/id/1225304748/photo/adjarian-khachapuri-with-egg-is-traditional-georgian-dish.jpg",
-    category: "ხაჭაპური და პური",
-    prepTime: 40,
-    cookTime: 15,
-    servings: 4,
-    difficulty: "საშუალო",
-    ingredients: [
-      "500გრ ფქვილი",
-      "1 ჩ/კ მარილი",
-      "300მლ თბილი წყალი",
-      "7გრ საფუარი",
-      "2 ს/კ ზეითუნის ზეთი",
-      "400გრ სულგუნი",
-      "100გრ იმერული ყველი",
-      "4 კვერცხი",
-      "50გრ კარაქი"
-    ],
-    steps: [
-      "გახსენით საფუარი თბილ წყალში და დაუმატეთ მარილი.",
-      "დაუმატეთ ფქვილი და მოზილეთ ცომი.",
-      "დაასვენეთ ცომი 1 საათის განმავლობაში.",
-      "გააბრტყელეთ ცომი ნავის ფორმით.",
-      "დაუმატეთ დაჭრილი ყველი შუაში.",
-      "გამოაცხვეთ 180°C ტემპერატურაზე 15 წუთი.",
-      "გამოღებისას ჩაარტყით კვერცხი შუაში და დაუმატეთ კარაქი."
-    ]
-  },
-  {
-    id: 2,
-    title: "ჩაქაფული",
-    description: "ტრადიციული საგაზაფხულო კერძი ბატკნის ხორცით, მწვანილებით და ღვინით.",
-    imageUrl: "https://media.istockphoto.com/id/1183254296/photo/georgian-cuisine-restaurant-chakapuli-stewed-spicy-boiled-lamp-meat-with-greens-lemon-marinade.jpg",
-    category: "მთავარი კერძი",
-    prepTime: 30,
-    cookTime: 120,
-    servings: 6,
-    difficulty: "საშუალო",
-    ingredients: [
-      "1კგ ბატკნის ხორცი",
-      "500გრ მწვანე ტყემალი",
-      "1 კონა თავშანი (ესტრაგონი)",
-      "1 კონა ომბალო",
-      "1 კონა ქინძი",
-      "4 ცალი ხახვი",
-      "250მლ თეთრი ღვინო",
-      "მარილი და პილპილი გემოვნებით"
-    ],
-    steps: [
-      "დაჭერით ხორცი პატარა ნაჭრებად.",
-      "მოათავსეთ ხორცი ქვაბში ხახვთან ერთად.",
-      "დაასხით ღვინო და წყალი.",
-      "დაამატეთ მწვანე ტყემალი და ადუღეთ 1 საათი.",
-      "დაამატეთ მწვანილები და ადუღეთ კიდევ 30 წუთი.",
-      "მიირთვით ცხლად პურთან ერთად."
-    ]
-  },
-  {
-    id: 3,
-    title: "ხინკალი",
-    description: "ქართული სამზარეულოს სიამაყე - ცომის პარკუჭები ხორცის წვნიანი შიგთავსით.",
-    imageUrl: "https://media.istockphoto.com/id/623271730/photo/traditional-georgian-khinkali.jpg",
-    category: "მთავარი კერძი",
-    prepTime: 60,
-    cookTime: 20,
-    servings: 6,
-    difficulty: "რთული",
-    ingredients: [
-      "500გრ ფქვილი",
-      "250მლ წყალი",
-      "1/2 ჩ/კ მარილი",
-      "500გრ დაკეპილი საქონლის ხორცი",
-      "200გრ დაკეპილი ღორის ხორცი",
-      "2 ხახვი",
-      "3 ნიორის კბილი",
-      "1 ჩ/კ კუმინი",
-      "1 ჩ/კ წითელი პილპილი",
-      "200მლ ცივი წყალი ფარშისთვის",
-      "მარილი და პილპილი გემოვნებით"
-    ],
-    steps: [
-      "მოზილეთ ცომი წყლით, მარილით და დაასვენეთ 30 წუთი.",
-      "მოამზადეთ ფარში ხორცის, ხახვის, ნიორის და სანელებლების შერევით.",
-      "დაუმატეთ ფარშს ცივი წყალი და კარგად აურიეთ.",
-      "გააბრტყელეთ ცომი და დაჭერით წრეებად.",
-      "მოათავსეთ ფარში ცომის წრეებზე და შეკარით კოხტად.",
-      "ადუღეთ ხინკალი მარილიან წყალში 7-8 წუთი.",
-      "მიირთვით შავი პილპილით."
-    ]
-  },
-  {
-    id: 4,
-    title: "ხარჩო",
-    description: "არომატული ცხარე წვნიანი საქონლის ხორცით და ბრინჯით.",
-    imageUrl: "https://media.istockphoto.com/id/1217286341/photo/kharcho-georgian-beef-soup-with-rice-and-sour-plums-sauce.jpg",
-    category: "სუპი",
-    prepTime: 30,
-    cookTime: 120,
-    servings: 8,
-    difficulty: "საშუალო",
-    ingredients: [
-      "1კგ საქონლის ხორცი",
-      "2 ხახვი",
-      "3 ნიორის კბილი",
-      "200გრ ბრინჯი",
-      "3 ს/კ ტომატის პასტა",
-      "2 ს/კ ტყემლის საწებელი",
-      "1 ჩ/კ ხმელი სუნელი",
-      "1 ჩ/კ უცხო სუნელი",
-      "1 ჩ/კ საფერავის პილპილი",
-      "1 კონა ქინძი",
-      "მარილი გემოვნებით"
-    ],
-    steps: [
-      "მოხარშეთ ხორცი 2 ლიტრ წყალში 1 საათის განმავლობაში.",
-      "დაამატეთ დაჭრილი ხახვი და ნიორი.",
-      "დაამატეთ ტომატის პასტა და ტყემალი.",
-      "დაამატეთ სანელებლები და ბრინჯი.",
-      "ადუღეთ კიდევ 20 წუთი.",
-      "დაამატეთ დაჭრილი ქინძი მოხარშვის ბოლოს."
-    ]
-  },
-  {
-    id: 5,
-    title: "ბადრიჯნის ფხალი",
-    description: "ცივი საუზმე დამუშავებული ბადრიჯნით, კაკლით და სანელებლებით.",
-    imageUrl: "https://media.istockphoto.com/id/1190450602/photo/eggplant-paste-rolls-with-walnut-filling-on-a-plate-badrijani-traditional-georgian-cuisine.jpg",
-    category: "სალათი",
-    prepTime: 40,
-    cookTime: 20,
-    servings: 4,
-    difficulty: "მარტივი",
-    ingredients: [
-      "3 ბადრიჯანი",
-      "200გრ კაკალი",
-      "3 ნიორის კბილი",
-      "1 ჩ/კ უცხო სუნელი",
-      "1/2 ჩ/კ საფერავის პილპილი",
-      "1 კონა ქინძი",
-      "მარილი გემოვნებით",
-      "ბროწეული გასაფორმებლად"
-    ],
-    steps: [
-      "შეწვით ბადრიჯნები მთლიანად, შემდეგ გააცივეთ და გაათავისუფლეთ კანისგან.",
-      "დაფქვით კაკალი ნიორთან და ქინძთან ერთად.",
-      "შეურიეთ სანელებლები და მარილი კაკლის ნარევს.",
-      "მოათავსეთ ბადრიჯნები ბრტყელ თეფშზე და გაუსწორეთ.",
-      "წაუსვით ზედაპირს კაკლის ნარევი და მოაყარეთ ბროწეულის მარცვლები."
-    ]
-  },
-  {
-    id: 6,
-    title: "შოთის პური",
-    description: "ტრადიციული ქართული პური თონეში გამომცხვარი.",
-    imageUrl: "https://media.istockphoto.com/id/968331250/photo/shoti-bread-georgian-puri-clay-oven-bread.jpg",
-    category: "ხაჭაპური და პური",
-    prepTime: 60,
-    cookTime: 15,
-    servings: 2,
-    difficulty: "საშუალო",
-    ingredients: [
-      "600გრ ფქვილი",
-      "350მლ თბილი წყალი",
-      "7გრ საფუარი",
-      "1 ჩ/კ მარილი",
-      "1 ჩ/კ შაქარი",
-      "2 ს/კ ზეითუნის ზეთი"
-    ],
-    steps: [
-      "გახსენით საფუარი თბილ წყალში შაქართან ერთად.",
-      "დაუმატეთ ფქვილი, მარილი და მოზილეთ ცომი.",
-      "დაასვენეთ ცომი 1 საათის განმავლობაში.",
-      "გააბრტყელეთ ცომი ტრადიციული ფორმით.",
-      "გამოაცხვეთ მაღალ ტემპერატურაზე (250°C) 15 წუთი."
-    ]
-  }
-];
+// ქართული რეცეპტების მონაცემთა ბაზა - აღარ ვიყენებთ სტატიკურ მონაცემებს
+const GEORGIAN_RECIPES: Recipe[] = [];
 
 // კატეგორიების სია
 const CATEGORIES: RecipeCategory[] = [
@@ -226,37 +46,46 @@ export default function Recipes() {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(true); // Added loading state
 
-  // ბაზიდან რეცეპტების მოთხოვნა
+  // ბაზიდან რეცეპტების მოთხოვნა Supabase-ის გამოყენებით
   useEffect(() => {
     async function fetchRecipes() {
       try {
-        setIsLoading(true); // Set loading state to true
+        setIsLoading(true);
         setLoading(true);
-        // ბაზიდან ჯერ მოვითხოვოთ რეცეპტები
-        const response = await fetch("/api/georgian-recipes");
-
-        if (!response.ok) {
-          throw new Error("რეცეპტების მოთხოვნისას მოხდა შეცდომა");
-        }
-
-        const dbRecipes = await response.json();
-        console.log("ბაზიდან მიღებული რეცეპტები:", dbRecipes);
-
-        // გავაერთიანოთ ბაზიდან მიღებული რეცეპტები და სტატიკური
-        setRecipes([...dbRecipes, ...GEORGIAN_RECIPES]);
+        
+        // Supabase-დან რეცეპტების მოთხოვნა
+        const { data: recipeService } = await import('@/services/supabaseService');
+        const recipes = await recipeService.recipeService.getAll();
+        
+        // რეცეპტების ფორმატირება კომპონენტის ტიპებთან შესაბამისობაში
+        const formattedRecipes = recipes.map((recipe: any) => ({
+          id: recipe.id,
+          title: recipe.title,
+          description: recipe.description,
+          imageUrl: recipe.image_url || 'https://placehold.co/600x400?text=Recipe',
+          category: recipe.category as RecipeCategory,
+          prepTime: recipe.prep_time,
+          cookTime: recipe.cook_time,
+          servings: recipe.servings,
+          difficulty: recipe.difficulty,
+          ingredients: recipe.ingredients ? recipe.ingredients.map((ing: any) => `${ing.amount} ${ing.unit} ${ing.name}`) : [],
+          steps: recipe.steps ? recipe.steps.map((step: any) => step.instruction) : []
+        }));
+        
+        console.log("Supabase-დან მიღებული რეცეპტები:", formattedRecipes);
+        setRecipes(formattedRecipes);
 
       } catch (error) {
         console.error("რეცეპტების მოთხოვნის შეცდომა:", error);
         toast({
           title: "შეცდომა",
-          description: "რეცეპტების ჩატვირთვა ვერ მოხერხდა. იყენება სტატიკური რეცეპტები.",
+          description: "რეცეპტების ჩატვირთვა ვერ მოხერხდა.",
           variant: "destructive"
         });
-        // შეცდომისას მხოლოდ სტატიკურ რეცეპტებს ვაჩვენებთ
-        setRecipes(GEORGIAN_RECIPES);
+        setRecipes([]);
       } finally {
         setLoading(false);
-        setIsLoading(false); // Set loading state to false
+        setIsLoading(false);
       }
     }
 
