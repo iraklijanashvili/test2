@@ -12,57 +12,115 @@ type Tutorial = Database['public']['Tables']['tutorials']['Insert'];
 export const recipeService = {
   // ყველა რეცეპტის მიღება
   getAll: async () => {
-    const { data, error } = await supabase.from('recipes').select('*');
-    if (error) throw error;
-    return data;
+    try {
+      const response = await fetch('/api/georgian-recipes');
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      return await response.json();
+    } catch (error) {
+      console.error('Error fetching recipes:', error);
+      throw new Error(`Failed to fetch Georgian recipes: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
   },
 
   // რეცეპტის მიღება ID-ით
   getById: async (id: number) => {
-    const { data, error } = await supabase
-      .from('recipes')
-      .select('*')
-      .eq('id', id)
-      .single();
-    if (error) throw error;
-    return data;
+    try {
+      const response = await fetch(`/api/georgian-recipes/${id}`);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      return await response.json();
+    } catch (error) {
+      console.error('Error fetching recipe:', error);
+      throw new Error(`Failed to fetch Georgian recipe: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
   },
 
   // ახალი რეცეპტის შექმნა
   create: async (recipe: Omit<Recipe, 'id' | 'created_at' | 'updated_at'>) => {
-    const { data, error } = await supabase
-      .from('recipes')
-      .insert({
-        ...recipe,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      })
-      .select()
-      .single();
-    if (error) throw error;
-    return data;
+    try {
+      const recipeData = {
+        recipe: {
+          ...recipe,
+        },
+        ingredients: [],
+        steps: []
+      };
+      
+      const response = await fetch('/api/georgian-recipes', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(recipeData)
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+      }
+      
+      return await response.json();
+    } catch (error) {
+      console.error('Error creating recipe:', error);
+      throw new Error(`Failed to create Georgian recipe: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
   },
 
   // რეცეპტის განახლება
   update: async (id: number, recipe: Partial<Omit<Recipe, 'id' | 'created_at'>>) => {
-    const { data, error } = await supabase
-      .from('recipes')
-      .update({
-        ...recipe,
-        updated_at: new Date().toISOString()
-      })
-      .eq('id', id)
-      .select()
-      .single();
-    if (error) throw error;
-    return data;
+    try {
+      const recipeData = {
+        recipe: {
+          ...recipe,
+        },
+        ingredients: [],
+        steps: []
+      };
+      
+      const response = await fetch(`/api/georgian-recipes/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(recipeData)
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+      }
+      
+      return await response.json();
+    } catch (error) {
+      console.error('Error updating recipe:', error);
+      throw new Error(`Failed to update Georgian recipe: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
   },
 
   // რეცეპტის წაშლა
   delete: async (id: number) => {
-    const { error } = await supabase.from('recipes').delete().eq('id', id);
-    if (error) throw error;
-    return true;
+    try {
+      const response = await fetch(`/api/georgian-recipes/${id}`, {
+        method: 'DELETE'
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+      }
+      
+      return true;
+    } catch (error) {
+      console.error('Error deleting recipe:', error);
+      throw new Error(`Failed to delete Georgian recipe: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
   }
 };
 

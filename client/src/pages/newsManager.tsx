@@ -32,14 +32,15 @@ export default function NewsManagerPage() {
 
   const fetchNews = async () => {
     try {
-      // Supabase-ის გამოყენება სიახლეების მისაღებად
-      const { data, error } = await supabase
-        .from('news')
-        .select('*')
-        .order('created_at', { ascending: false });
+      // API-ის გამოყენება სიახლეების მისაღებად
+      const response = await fetch('/api/news');
       
-      if (error) throw error;
-      setNews(data || []);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      setNews(data.articles || []);
     } catch (error) {
       console.error('Error fetching news:', error);
       toast({
@@ -74,47 +75,38 @@ export default function NewsManagerPage() {
         return;
       }
       
-      // Supabase-ის გამოყენება სიახლის შესანახად
-      let error;
+      // მონაცემების მომზადება API-სთვის
+      const newsData = {
+        title: article.title,
+        content: article.content,
+        description: article.description || article.content.substring(0, 100),
+        imageUrl: article.source?.name || "",
+        videoUrl: ""
+      };
       
-      if (isEditing) {
-        // არსებული სიახლის განახლება
-        const { error: updateError } = await supabase
-          .from('news')
-          .update({
-            title: article.title,
-            content: article.content,
-            description: article.description,
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', article.id);
-          
-        error = updateError;
-      } else {
-        // ახალი სიახლის დამატება
-        const { error: insertError } = await supabase
-          .from('news')
-          .insert({
-            title: article.title,
-            content: article.content,
-            description: article.description,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-          });
-          
-        error = insertError;
+      // API-ის გამოყენება სიახლის შესანახად
+      const url = isEditing ? `/api/news/${article.id}` : '/api/news';
+      const method = isEditing ? 'PUT' : 'POST';
+      
+      const response = await fetch(url, {
+        method,
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(newsData)
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
       }
 
-      if (!error) {
-        toast({
-          title: "წარმატება",
-          description: `სიახლე ${isEditing ? 'განახლდა' : 'დაემატა'} წარმატებით`,
-        });
-        setEditingArticle(null);
-        fetchNews();
-      } else {
-        throw error;
-      }
+      toast({
+        title: "წარმატება",
+        description: `სიახლე ${isEditing ? 'განახლდა' : 'დაემატა'} წარმატებით`,
+      });
+      setEditingArticle(null);
+      fetchNews();
     } catch (error) {
       console.error('Error saving news article:', error);
       toast({
@@ -129,21 +121,20 @@ export default function NewsManagerPage() {
     if (!confirm('ნამდვილად გსურთ სიახლის წაშლა?')) return;
 
     try {
-      // Supabase-ის გამოყენება სიახლის წასაშლელად
-      const { error } = await supabase
-        .from('news')
-        .delete()
-        .eq('id', id);
+      // API-ის გამოყენება სიახლის წასაშლელად
+      const response = await fetch(`/api/news/${id}`, {
+        method: 'DELETE'
+      });
 
-      if (!error) {
-        toast({
-          title: "წარმატება",
-          description: "სიახლე წაიშალა წარმატებით",
-        });
-        fetchNews();
-      } else {
-        throw error;
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
+
+      toast({
+        title: "წარმატება",
+        description: "სიახლე წაიშალა წარმატებით",
+      });
+      fetchNews();
     } catch (error) {
       console.error('Error deleting news:', error);
       toast({
