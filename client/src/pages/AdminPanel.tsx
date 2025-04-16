@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'wouter';
 import SEO from "@/components/layout/SEO";
+import { recipeService, tipService, tutorialService } from '@/services/supabaseService';
 
 type Recipe = {
   id: number;
@@ -41,15 +42,13 @@ export function AdminPanel() {
         setError('');
 
         if (activeTab === 'recipes') {
-          const response = await fetch('/iraklijanashvili/recipes');
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+          try {
+            const data = await recipeService.getAll();
+            setRecipes(data);
+          } catch (error) {
+            console.error('რეცეპტების ჩატვირთვის შეცდომა:', error);
+            throw new Error('რეცეპტების ჩატვირთვის შეცდომა');
           }
-          const data = await response.json();
-          if (!Array.isArray(data)) {
-            throw new Error('მიღებული მონაცემები არ არის მასივის ფორმატში');
-          }
-          setRecipes(data);
         } else if (activeTab === 'news') {
           const response = await fetch('/iraklijanashvili/news');
           if (!response.ok) {
@@ -61,25 +60,21 @@ export function AdminPanel() {
           }
           setNews(data);
         } else if (activeTab === 'tutorials') {
-          const response = await fetch('/iraklijanashvili/tutorials');
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+          try {
+            const data = await tutorialService.getAll();
+            setTutorials(data);
+          } catch (error) {
+            console.error('ინსტრუქციების ჩატვირთვის შეცდომა:', error);
+            throw new Error('ინსტრუქციების ჩატვირთვის შეცდომა');
           }
-          const data = await response.json();
-          if (!Array.isArray(data)) {
-            throw new Error('მიღებული მონაცემები არ არის მასივის ფორმატში');
-          }
-          setTutorials(data);
         } else if (activeTab === 'tips') {
-          const response = await fetch('/iraklijanashvili/tips');
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+          try {
+            const data = await tipService.getAll();
+            setTips(data);
+          } catch (error) {
+            console.error('რჩევების ჩატვირთვის შეცდომა:', error);
+            throw new Error('რჩევების ჩატვირთვის შეცდომა');
           }
-          const data = await response.json();
-          if (!Array.isArray(data)) {
-            throw new Error('მიღებული მონაცემები არ არის მასივის ფორმატში');
-          }
-          setTips(data);
         }
       } catch (err) {
         console.error('მონაცემების ჩატვირთვის შეცდომა:', err);
@@ -97,25 +92,26 @@ export function AdminPanel() {
     if (!confirm('ნამდვილად გსურთ წაშლა?')) return;
 
     try {
-      const response = await fetch(
-        `/iraklijanashvili/${type === 'recipe' ? 'recipes' : type === 'news' ? 'news' : type === 'tutorial' ? 'tutorials' : 'tips'}/${id}`,
-        { method: 'DELETE' }
-      );
-
-      if (response.ok) {
-        if (type === 'recipe') {
-          setRecipes(recipes.filter(r => r.id !== id));
-        } else if (type === 'news') {
+      if (type === 'recipe') {
+        await recipeService.delete(id);
+        setRecipes(recipes.filter(r => r.id !== id));
+      } else if (type === 'news') {
+        // სიახლეების წაშლა API-ის გამოყენებით, სანამ Supabase-ში დაემატება
+        const response = await fetch(`/iraklijanashvili/news/${id}`, { method: 'DELETE' });
+        if (response.ok) {
           setNews(news.filter(n => n.id !== id));
-        } else if (type === 'tutorial') {
-          setTutorials(tutorials.filter(t => t.id !== id));
         } else {
-          setTips(tips.filter(t => t.id !== id));
+          throw new Error('სიახლის წაშლის შეცდომა');
         }
+      } else if (type === 'tutorial') {
+        await tutorialService.delete(id);
+        setTutorials(tutorials.filter(t => t.id !== id));
       } else {
-        setError('წაშლის შეცდომა');
+        await tipService.delete(id);
+        setTips(tips.filter(t => t.id !== id));
       }
     } catch (err) {
+      console.error('წაშლის შეცდომა:', err);
       setError('წაშლის შეცდომა');
     }
   };

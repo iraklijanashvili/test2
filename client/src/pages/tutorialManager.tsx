@@ -11,6 +11,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import SEO from '@/components/layout/SEO';
 import type { Tutorial } from '@shared/schema';
+import { tutorialService } from '@/services/supabaseService';
 
 const tutorialSchema = z.object({
   title: z.string().min(1, 'სათაური სავალდებულოა'),
@@ -34,7 +35,13 @@ export default function TutorialManager() {
 
   const { data: tutorial, isLoading } = useQuery<Tutorial>({
     queryKey: [`/iraklijanashvili/tutorials/${tutorialId}`],
-    enabled: isEditing
+    enabled: isEditing,
+    queryFn: async () => {
+      if (tutorialId && tutorialId !== 'new') {
+        return await tutorialService.getById(parseInt(tutorialId));
+      }
+      throw new Error('არასწორი ID');
+    }
   });
 
   useState(() => {
@@ -49,22 +56,35 @@ export default function TutorialManager() {
 
   const onSubmit = async (data: TutorialFormData) => {
     try {
-      const response = await fetch(`/iraklijanashvili/tutorials${isEditing ? `/${tutorialId}` : ''}`, {
-        method: isEditing ? 'PUT' : 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      });
-
-      if (response.ok) {
+      // Supabase-ის გამოყენება მონაცემების შესანახად
+      if (isEditing && tutorialId) {
+        await tutorialService.update(parseInt(tutorialId), {
+          title: data.title,
+          content: data.content,
+          category: data.category,
+          image_url: data.imageUrl || null,
+          read_time: data.readTime
+        });
         toast({
-          title: isEditing ? 'ინსტრუქცია განახლდა' : 'ინსტრუქცია დაემატა',
+          title: 'ინსტრუქცია განახლდა',
           description: 'ოპერაცია წარმატებით შესრულდა'
         });
-        setLocation('/iraklijanashvili');
       } else {
-        throw new Error('ოპერაცია ვერ შესრულდა');
+        await tutorialService.create({
+          title: data.title,
+          content: data.content,
+          category: data.category,
+          image_url: data.imageUrl || null,
+          read_time: data.readTime
+        });
+        toast({
+          title: 'ინსტრუქცია დაემატა',
+          description: 'ოპერაცია წარმატებით შესრულდა'
+        });
       }
+      setLocation('/iraklijanashvili');
     } catch (error) {
+      console.error('ინსტრუქციის შენახვის შეცდომა:', error);
       toast({
         title: 'შეცდომა',
         description: 'ოპერაცია ვერ შესრულდა',

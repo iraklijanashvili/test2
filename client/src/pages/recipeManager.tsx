@@ -9,6 +9,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { Pencil, Trash2, ArrowLeft } from "lucide-react";
+import { recipeService } from "@/services/supabaseService";
+import SEO from "@/components/layout/SEO";
 
 export default function RecipeManagerPage() {
   const [, setLocation] = useLocation();
@@ -21,19 +23,16 @@ export default function RecipeManagerPage() {
 
   const fetchRecipes = async () => {
     try {
-      const response = await fetch('/api/georgian-recipes');
-      if (response.ok) {
-        const data = await response.json();
-        // შევამოწმოთ, რომ მიღებული მონაცემები არის მასივი
-        if (Array.isArray(data)) {
-          setRecipes(data);
-        } else {
-          console.error('მიღებული მონაცემები არ არის მასივი:', data);
-          setRecipes([]);
-        }
-      }
+      // Supabase-ის გამოყენება რეცეპტების მისაღებად
+      const data = await recipeService.getAll();
+      setRecipes(data);
     } catch (error) {
       console.error('შეცდომა რეცეპტების მიღებისას:', error);
+      toast({
+        title: "შეცდომა",
+        description: "რეცეპტების ჩატვირთვა ვერ მოხერხდა",
+        variant: "destructive",
+      });
       setRecipes([]);
     }
   };
@@ -42,22 +41,15 @@ export default function RecipeManagerPage() {
     if (!confirm('ნამდვილად გსურთ რეცეპტის წაშლა?')) return;
     
     try {
-      console.log(`Sending DELETE request to /api/georgian-recipes/${id}`);
-      const response = await fetch(`/api/georgian-recipes/${id}`, {
-        method: 'DELETE'
+      // Supabase-ის გამოყენება რეცეპტის წასაშლელად
+      await recipeService.delete(id);
+      toast({
+        title: "რეცეპტი წაიშალა",
+        description: "რეცეპტი წარმატებით წაიშალა",
       });
-      
-      if (response.ok) {
-        toast({
-          title: "რეცეპტი წაიშალა",
-          description: "რეცეპტი წარმატებით წაიშალა",
-        });
-        fetchRecipes();
-      } else {
-        console.error(`Delete failed with status: ${response.status}`);
-        throw new Error(`Server responded with status: ${response.status}`);
-      }
+      fetchRecipes();
     } catch (error) {
+      console.error('შეცდომა რეცეპტის წაშლისას:', error);
       toast({
         title: "შეცდომა",
         description: "რეცეპტის წაშლა ვერ მოხერხდა",
@@ -68,6 +60,12 @@ export default function RecipeManagerPage() {
 
   return (
     <div className="bg-gray-100 min-h-screen flex flex-col">
+      <SEO 
+        title="რეცეპტების მართვა | უნივერსალური ხელსაწყოები"
+        description="რეცეპტების მართვის პანელი"
+        ogType="website"
+        keywords="რეცეპტები, მართვა, ადმინისტრირება"
+      />
       <Header />
       
       <main className="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

@@ -12,6 +12,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import SEO from '@/components/layout/SEO';
 import type { Tip } from '@shared/schema';
+import { tipService } from '@/services/supabaseService';
 
 const tipSchema = z.object({
   title: z.string().min(1, 'სათაური სავალდებულოა'),
@@ -34,7 +35,13 @@ export default function TipManager() {
 
   const { data: tip, isLoading } = useQuery<Tip>({
     queryKey: [`/iraklijanashvili/tips/${tipId}`],
-    enabled: isEditing
+    enabled: isEditing,
+    queryFn: async () => {
+      if (tipId && tipId !== 'new') {
+        return await tipService.getById(parseInt(tipId));
+      }
+      throw new Error('არასწორი ID');
+    }
   });
 
   useState(() => {
@@ -48,22 +55,33 @@ export default function TipManager() {
 
   const onSubmit = async (data: TipFormData) => {
     try {
-      const response = await fetch(`/iraklijanashvili/tips${isEditing ? `/${tipId}` : ''}`, {
-        method: isEditing ? 'PUT' : 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      });
-
-      if (response.ok) {
+      // Supabase-ის გამოყენება მონაცემების შესანახად
+      if (isEditing && tipId) {
+        await tipService.update(parseInt(tipId), {
+          title: data.title,
+          content: data.content,
+          category: data.category,
+          is_tip_of_day: data.isTipOfDay
+        });
         toast({
-          title: isEditing ? 'რჩევა განახლდა' : 'რჩევა დაემატა',
+          title: 'რჩევა განახლდა',
           description: 'ოპერაცია წარმატებით შესრულდა'
         });
-        setLocation('/iraklijanashvili');
       } else {
-        throw new Error('ოპერაცია ვერ შესრულდა');
+        await tipService.create({
+          title: data.title,
+          content: data.content,
+          category: data.category,
+          is_tip_of_day: data.isTipOfDay
+        });
+        toast({
+          title: 'რჩევა დაემატა',
+          description: 'ოპერაცია წარმატებით შესრულდა'
+        });
       }
+      setLocation('/iraklijanashvili');
     } catch (error) {
+      console.error('რჩევის შენახვის შეცდომა:', error);
       toast({
         title: 'შეცდომა',
         description: 'ოპერაცია ვერ შესრულდა',

@@ -8,6 +8,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
 import { Pencil, Trash2, Plus } from "lucide-react";
+import { supabase } from "@/lib/supabase";
+import SEO from "@/components/layout/SEO";
 
 interface NewsArticle {
   id: number;
@@ -30,11 +32,14 @@ export default function NewsManagerPage() {
 
   const fetchNews = async () => {
     try {
-      const response = await fetch('/api/news');
-      if (response.ok) {
-        const data = await response.json();
-        setNews(data.articles || []);
-      }
+      // Supabase-ის გამოყენება სიახლეების მისაღებად
+      const { data, error } = await supabase
+        .from('news')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      setNews(data || []);
     } catch (error) {
       console.error('Error fetching news:', error);
       toast({
@@ -49,8 +54,6 @@ export default function NewsManagerPage() {
     try {
       // შევამოწმოთ არის თუ არა ეს ახალი სტატია ან არსებულის რედაქტირება
       const isEditing = article.id > 0;
-      const url = isEditing ? `/api/news/${article.id}` : '/api/news';
-      const method = isEditing ? 'PUT' : 'POST';
       
       // შევამოწმოთ აუცილებელი ველები
       if (!article.title.trim()) {
@@ -71,15 +74,38 @@ export default function NewsManagerPage() {
         return;
       }
       
-      console.log(`Sending ${method} request to ${url} with article:`, article);
+      // Supabase-ის გამოყენება სიახლის შესანახად
+      let error;
       
-      const response = await fetch(url, {
-        method: method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(article),
-      });
+      if (isEditing) {
+        // არსებული სიახლის განახლება
+        const { error: updateError } = await supabase
+          .from('news')
+          .update({
+            title: article.title,
+            content: article.content,
+            description: article.description,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', article.id);
+          
+        error = updateError;
+      } else {
+        // ახალი სიახლის დამატება
+        const { error: insertError } = await supabase
+          .from('news')
+          .insert({
+            title: article.title,
+            content: article.content,
+            description: article.description,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          });
+          
+        error = insertError;
+      }
 
-      if (response.ok) {
+      if (!error) {
         toast({
           title: "წარმატება",
           description: `სიახლე ${isEditing ? 'განახლდა' : 'დაემატა'} წარმატებით`,
@@ -87,8 +113,7 @@ export default function NewsManagerPage() {
         setEditingArticle(null);
         fetchNews();
       } else {
-        const errorData = await response.json();
-        throw new Error(errorData.message || `Server responded with status: ${response.status}`);
+        throw error;
       }
     } catch (error) {
       console.error('Error saving news article:', error);
@@ -104,22 +129,23 @@ export default function NewsManagerPage() {
     if (!confirm('ნამდვილად გსურთ სიახლის წაშლა?')) return;
 
     try {
-      console.log(`Sending DELETE request to /api/news/${id}`);
-      const response = await fetch(`/api/news/${id}`, {
-        method: 'DELETE',
-      });
+      // Supabase-ის გამოყენება სიახლის წასაშლელად
+      const { error } = await supabase
+        .from('news')
+        .delete()
+        .eq('id', id);
 
-      if (response.ok) {
+      if (!error) {
         toast({
           title: "წარმატება",
           description: "სიახლე წაიშალა წარმატებით",
         });
         fetchNews();
       } else {
-        console.error(`Delete failed with status: ${response.status}`);
-        throw new Error(`Server responded with status: ${response.status}`);
+        throw error;
       }
     } catch (error) {
+      console.error('Error deleting news:', error);
       toast({
         title: "შეცდომა",
         description: "სიახლის წაშლა ვერ მოხერხდა",
@@ -130,6 +156,12 @@ export default function NewsManagerPage() {
 
   return (
     <div className="bg-gray-100 min-h-screen flex flex-col">
+      <SEO 
+        title="სიახლეების მართვა | უნივერსალური ხელსაწყოები"
+        description="სიახლეების მართვის პანელი"
+        ogType="website"
+        keywords="სიახლეები, მართვა, ადმინისტრირება"
+      />
       <Header />
       <main className="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex justify-between items-center mb-6">
