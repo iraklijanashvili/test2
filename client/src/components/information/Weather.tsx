@@ -99,7 +99,6 @@ export default function Weather() {
   // ამინდის აღწერების თარგმანები
   const weatherTranslations: { [key: string]: string } = {
     "Sunny": "მზიანი",
-    "Clear": "მზიანი",
     "Partly cloudy": "ნაწილობრივ მოღრუბლული",
     "Cloudy": "ღრუბლიანი",
     "Overcast": "მოღრუბლული",
@@ -127,8 +126,6 @@ export default function Weather() {
     "Moderate snow": "ზომიერი თოვლი",
     "Heavy snow": "ძლიერი თოვლი",
     "Ice pellets": "სეტყვა",
-    "Light rain shower": "სუსტი წვიმა",
-    "Moderate or heavy rain shower": "ზომიერი ან ძლიერი წვიმა",
     "Torrential rain shower": "ძლიერი წვიმა",
     "Light sleet showers": "სუსტი თოვლჭყაპი",
     "Moderate or heavy sleet showers": "ზომიერი ან ძლიერი თოვლჭყაპი",

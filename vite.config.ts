@@ -15,6 +15,8 @@ export default defineConfig({
     rollupOptions: {
       external: ['react-error-boundary', '@supabase/supabase-js']
     },
+    outDir: path.resolve(__dirname, "dist/public"),
+    emptyOutDir: true,
   },
   resolve: {
     alias: {
@@ -24,8 +26,4 @@ export default defineConfig({
     },
   },
   root: path.resolve(__dirname, "client"),
-  build: {
-    outDir: path.resolve(__dirname, "dist/public"),
-    emptyOutDir: true,
-  },
 });
