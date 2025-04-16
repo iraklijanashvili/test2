@@ -36,7 +36,7 @@ export default function NewsManagerPage() {
     try {
       // newsService-ის გამოყენება სიახლეების მისაღებად
       const data = await newsService.getAll();
-      setNews(data || []);
+      setNews(data.articles || []);
     } catch (error) {
       console.error('Error fetching news:', error);
       toast({
@@ -187,7 +187,7 @@ export default function NewsManagerPage() {
                   <h3 className="text-xl font-semibold">{article.title}</h3>
                   <p className="text-gray-600 mt-2">{article.description}</p>
                   <div className="text-sm text-gray-500 mt-2">
-                    {article.created_at ? new Date(article.created_at).toLocaleDateString('ka-GE') : ''}
+                    {new Date(article.publishedAt).toLocaleDateString('ka-GE')}
                   </div>
                 </div>
                 <div className="flex gap-2">

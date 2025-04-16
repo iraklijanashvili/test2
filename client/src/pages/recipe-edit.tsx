@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Plus, Minus } from "lucide-react";
-import { recipeService } from "@/services/supabaseService";
+import { recipeService } from "@/services/recipeService";
 import SEO from "@/components/layout/SEO";
 
 
