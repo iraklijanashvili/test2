@@ -13,7 +13,7 @@ export const newsService = {
     try {
       const { data, error } = await supabase.from('news').select('*');
       if (error) throw error;
-      return { articles: data };
+      return data;
     } catch (error) {
       console.error('Error fetching news:', error);
       throw new Error(`Failed to fetch news: ${error instanceof Error ? error.message : 'Unknown error'}`);
